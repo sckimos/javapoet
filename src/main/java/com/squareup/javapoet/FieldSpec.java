@@ -101,7 +101,9 @@ public final class FieldSpec {
 
   public static Builder builder(TypeName type, String name, Modifier... modifiers) {
     checkNotNull(type, "type == null");
-    checkArgument(SourceVersion.isName(name), "not a valid name: %s", name);
+    if (name != null) {
+      checkArgument(SourceVersion.isName(name), "not a valid name: %s", name);
+    }
     return new Builder(type, name)
         .addModifiers(modifiers);
   }

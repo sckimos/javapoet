@@ -46,11 +46,21 @@ public class FieldSpecTest {
   }
   
   @Test public void multipleFieldName() {
-	FieldSpec a = FieldSpec.builder(String.class, "aaa")
-			.addName("bbb")
-			.addName("ccc")
-			.build();
-	String src = a.toString();
-	assertThat(src.contains("aaa, bbb, ccc")).isTrue();
+    FieldSpec a = FieldSpec.builder(String.class, "aaa")
+            .addName("bbb")
+            .addName("ccc")
+            .build();
+    String src = a.toString();
+    assertThat(src.contains("aaa, bbb, ccc")).isTrue();
+  }
+  
+  @Test public void multipleFieldNameWithNull() {
+    FieldSpec a = FieldSpec.builder(String.class, null)
+            .addName("aaa")
+            .addName("bbb")
+            .addName("ccc")
+            .build();
+    String src = a.toString();
+    assertThat(src.contains("aaa, bbb, ccc")).isTrue();
   }
 }
