@@ -185,7 +185,7 @@ public final class CodeBlock {
     private String argToName(Object o) {
       if (o instanceof CharSequence) return o.toString();
       if (o instanceof ParameterSpec) return ((ParameterSpec) o).name;
-      if (o instanceof FieldSpec) return ((FieldSpec) o).name;
+      if (o instanceof FieldSpec) return ((FieldSpec) o).names.get(0);
       if (o instanceof MethodSpec) return ((MethodSpec) o).name;
       if (o instanceof TypeSpec) return ((TypeSpec) o).name;
       throw new IllegalArgumentException("expected name but was " + o);

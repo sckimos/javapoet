@@ -460,8 +460,10 @@ public final class TypeSpec {
       if (kind == Kind.INTERFACE) {
         requireExactlyOneOf(fieldSpec.modifiers, Modifier.PUBLIC, Modifier.PRIVATE);
         Set<Modifier> check = EnumSet.of(Modifier.STATIC, Modifier.FINAL);
-        checkState(fieldSpec.modifiers.containsAll(check), "%s %s.%s requires modifiers %s",
-            kind, name, fieldSpec.name, check);
+        for (String name : fieldSpec.names) {
+          checkState(fieldSpec.modifiers.containsAll(check), "%s %s.%s requires modifiers %s",
+              kind, name, name, check);
+        }
       }
       fieldSpecs.add(fieldSpec);
       return this;

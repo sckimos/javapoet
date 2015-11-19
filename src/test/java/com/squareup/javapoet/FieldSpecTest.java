@@ -15,12 +15,12 @@
  */
 package com.squareup.javapoet;
 
-import org.junit.Test;
-
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
 import javax.lang.model.element.Modifier;
+
+import org.junit.Test;
 
 public class FieldSpecTest {
   @Test public void equalsAndHashCode() {
@@ -43,5 +43,14 @@ public class FieldSpecTest {
       assertThat(expected.getMessage())
           .isEqualTo("annotationSpecs == null");
     }
+  }
+  
+  @Test public void multipleFieldName() {
+	FieldSpec a = FieldSpec.builder(String.class, "aaa")
+			.addName("bbb")
+			.addName("ccc")
+			.build();
+	String src = a.toString();
+	assertThat(src.contains("aaa, bbb, ccc")).isTrue();
   }
 }

@@ -32,7 +32,7 @@ import static com.squareup.javapoet.Util.checkState;
 /** A generated field declaration. */
 public final class FieldSpec {
   public final TypeName type;
-  public final String name;
+  public final List<String> names;
   public final CodeBlock javadoc;
   public final List<AnnotationSpec> annotations;
   public final Set<Modifier> modifiers;
@@ -40,7 +40,10 @@ public final class FieldSpec {
 
   private FieldSpec(Builder builder) {
     this.type = checkNotNull(builder.type, "type == null");
-    this.name = checkNotNull(builder.name, "name == null");
+    if (builder.names.isEmpty()) {
+      throw new IllegalStateException("FieldSpec has no name.");
+    }
+    this.names = builder.names;
     this.javadoc = builder.javadoc.build();
     this.annotations = Util.immutableList(builder.annotations);
     this.modifiers = Util.immutableSet(builder.modifiers);
@@ -57,7 +60,16 @@ public final class FieldSpec {
     codeWriter.emitJavadoc(javadoc);
     codeWriter.emitAnnotations(annotations, false);
     codeWriter.emitModifiers(modifiers, implicitModifiers);
-    codeWriter.emit("$T $L", type, name);
+    
+    StringBuilder format = new StringBuilder().append("$T $L");
+    for (int i = 0; i < names.size() - 1; ++i) {
+      format.append(", $L");
+    }
+    List<Object> args = new ArrayList<Object>();
+    args.add(type);
+    args.addAll(names);
+    codeWriter.emit(format.toString(), args.toArray(new Object[args.size()]));
+
     if (!initializer.isEmpty()) {
       codeWriter.emit(" = ");
       codeWriter.emit(initializer);
@@ -99,7 +111,8 @@ public final class FieldSpec {
   }
 
   public Builder toBuilder() {
-    Builder builder = new Builder(type, name);
+    Builder builder = new Builder(type, null);
+    builder.names.addAll(names);
     builder.javadoc.add(javadoc);
     builder.annotations.addAll(annotations);
     builder.modifiers.addAll(modifiers);
@@ -109,7 +122,7 @@ public final class FieldSpec {
 
   public static final class Builder {
     private final TypeName type;
-    private final String name;
+    private final List<String> names = new ArrayList<String>();
 
     private final CodeBlock.Builder javadoc = CodeBlock.builder();
     private final List<AnnotationSpec> annotations = new ArrayList<>();
@@ -118,7 +131,14 @@ public final class FieldSpec {
 
     private Builder(TypeName type, String name) {
       this.type = type;
-      this.name = name;
+      if (name != null) {
+    	addName(name);
+      }
+    }
+    
+    public Builder addName(String name) {
+      this.names.add(name);
+      return this;
     }
 
     public Builder addJavadoc(String format, Object... args) {
